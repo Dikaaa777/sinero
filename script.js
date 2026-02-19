@@ -25,26 +25,7 @@ function closePopup(){
   overlay.style.display = 'none';
 }
 
-// ===== Fake Parameter Data =====
-function randomTEG(){
-  return {
-    Thot: (120 + Math.random()*30).toFixed(1),
-    Tcold: (40 + Math.random()*20).toFixed(1),
-    Tegangan: (2 + Math.random()*2).toFixed(2),
-    Seebeck: (50 + Math.random()*10).toFixed(1)
-  };
-}
-
-function randomCEMS(){
-  return {
-    CO: (10 + Math.random()*20).toFixed(1),
-    NOx: (40 + Math.random()*40).toFixed(1),
-    SO2: (5 + Math.random()*20).toFixed(1),
-    O2: (18 + Math.random()*2).toFixed(1)
-  };
-}
-
-// ===== Chart Setup =====
+// ===== Chart Setup (Static) =====
 const tegCtx = document.getElementById('tegChart')?.getContext('2d');
 const cemsCtx = document.getElementById('cemsChart')?.getContext('2d');
 
@@ -56,7 +37,7 @@ function createChart(ctx, label){
       labels: Array.from({length:20}, (_,i)=>i+1),
       datasets: [{
         label: label,
-        data: Array.from({length:20}, ()=>Math.random()*50+10),
+        data: Array.from({length:20}, ()=>0), // chart kosong
         borderColor: 'rgba(0,200,255,0.7)',
         backgroundColor: 'rgba(0,200,255,0.2)',
         tension: 0.4
@@ -76,52 +57,16 @@ function createChart(ctx, label){
 const tegChart = createChart(tegCtx, 'TEG Output');
 const cemsChart = createChart(cemsCtx, 'CEMS Output');
 
-// ===== Status Chart Elements =====
+// ===== Status Chart OFFLINE =====
 const tegStatus = document.getElementById('tegStatus');
 const cemsStatus = document.getElementById('cemsStatus');
 
-// ===== Update Fake Data & Chart Every 2s =====
-setInterval(()=>{
-  // Update Parameter Cards
-  const tegParam = randomTEG();
-  const cemsParam = randomCEMS();
+if(tegStatus) tegStatus.innerHTML = 'Status: <span style="color:#f00;">OFFLINE</span>';
+if(cemsStatus) cemsStatus.innerHTML = 'Status: <span style="color:#f00;">OFFLINE</span>';
 
-  const tegCard = document.querySelector('.param-column:nth-child(1) .param-card');
-  const cemsCard = document.querySelector('.param-column:nth-child(2) .param-card');
+// ===== Parameter Cards remain empty (no simulation) =====
+const tegCard = document.querySelector('.param-column:nth-child(1) .param-card');
+const cemsCard = document.querySelector('.param-column:nth-child(2) .param-card');
 
-  if(tegCard){
-    tegCard.innerHTML = `
-      <p>Thot: ${tegParam.Thot} °C</p>
-      <p>Tcold: ${tegParam.Tcold} °C</p>
-      <p>Tegangan: ${tegParam.Tegangan} V</p>
-      <p>Seebeck: ${tegParam.Seebeck} µV/K</p>
-      <p>Status: <span style="color:#0f0;">ONLINE</span></p>
-    `;
-  }
-
-  if(cemsCard){
-    cemsCard.innerHTML = `
-      <p>CO: ${cemsParam.CO} ppm</p>
-      <p>NOx: ${cemsParam.NOx} ppm</p>
-      <p>SO2: ${cemsParam.SO2} ppm</p>
-      <p>O2: ${cemsParam.O2} %</p>
-      <p>Status: <span style="color:#0f0;">ONLINE</span></p>
-    `;
-  }
-
-  // Update Chart Data
-  function updateChart(chart){
-    if(!chart) return;
-    chart.data.datasets[0].data.shift();
-    chart.data.datasets[0].data.push(Math.random()*50 + 10);
-    chart.update();
-  }
-
-  updateChart(tegChart);
-  updateChart(cemsChart);
-
-  // Update chart status ONLINE
-  if(tegStatus) tegStatus.innerHTML = 'Status: <span style="color:#0f0;">ONLINE</span>';
-  if(cemsStatus) cemsStatus.innerHTML = 'Status: <span style="color:#0f0;">ONLINE</span>';
-
-}, 2000);
+if(tegCard) tegCard.innerHTML = '<p>Data TEG belum tersedia</p>';
+if(cemsCard) cemsCard.innerHTML = '<p>Data CEMS belum tersedia</p>';
