@@ -1,43 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Si NeRo - Parameter</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>NeRo Parameters</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="dashboard-container">
+<nav>
+  <div class="logo">Si NeRo</div>
+  <div class="nav-links">
+    <a href="index.html">
+      <button>Back to Dashboard</button>
+    </a>
+  </div>
+</nav>
 
-  <aside class="sidebar">
-    <h2>Si NeRo : Sistem Neraca Zero Emissions</h2>
-    <nav>
-      <a href="index.html">Chart</a>
-      <a href="parameter.html" class="active">Parameter</a>
-      <button id="modeToggle">Dark Mode</button>
-    </nav>
-  </aside>
+<div class="container">
 
-  <main class="main-content param-page">
-    <div class="param-column">
-      <h3>TEG Parameters</h3>
-      <div class="param-card"></div>
-    </div>
-    <div class="param-column">
-      <h3>CEMS Parameters</h3>
-      <div class="param-card"></div>
-    </div>
-  </main>
+  <div class="card">
+    <h3>TEG Configuration</h3>
+    <label>Max Temperature (°C)</label>
+    <input type="number" id="tegTemp" value="120">
+
+    <label>Min Temperature (°C)</label>
+    <input type="number" id="tegMinTemp" value="40">
+
+    <label>Power Threshold (W)</label>
+    <input type="number" id="tegPower" value="75">
+  </div>
+
+  <div class="card">
+    <h3>CEMS Configuration</h3>
+    <label>Max CO₂ (ppm)</label>
+    <input type="number" id="cemsMax" value="150">
+
+    <label>Warning Level (ppm)</label>
+    <input type="number" id="cemsWarn" value="120">
+
+    <label>Safe Level (ppm)</label>
+    <input type="number" id="cemsSafe" value="80">
+  </div>
+
+  <div class="card status-card">
+    <h3>System Mode</h3>
+    <p>Current Mode: <span id="modeStatus">Loading...</span></p>
+  </div>
 
 </div>
 
-<div class="system-indicator">
-  <span id="modeText">SIMULATION MODE</span>
-  <span id="deviceStatus" class="status offline">DEVICE OFFLINE</span>
-  <button id="modeSwitchBtn">Switch to Live</button>
-</div>
+<script>
+  const modeStatus = document.getElementById("modeStatus");
+  const savedMode = localStorage.getItem("nero_mode");
 
-<script src="script.js"></script>
+  if (savedMode === "live") {
+    modeStatus.textContent = "Live Mode";
+  } else {
+    modeStatus.textContent = "Simulation Mode";
+  }
+</script>
+
 </body>
 </html>
