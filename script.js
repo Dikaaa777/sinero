@@ -1,131 +1,112 @@
-const modeBtn = document.getElementById("modeBtn");
-const modeStatus = document.getElementById("modeStatus");
-const connectionStatus = document.getElementById("connectionStatus");
-const announcement = document.getElementById("announcement");
+const body = document.body;
+body.classList.add("dark");
 
-let isLive = false;
-let deviceActive = false;
-let connectionInterval;
+const themeToggle = document.getElementById("themeToggle");
+if (themeToggle) {
+    themeToggle.onclick = () => {
+        body.classList.toggle("dark");
+        body.classList.toggle("light");
+    };
+}
 
-/* ===== CREATE CHART ===== */
+let mode = "simulation";
+let deviceConnected = false;
 
-function createChart(ctx, label) {
-  return new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [{
-        label: label,
-        data: [],
-        borderWidth: 2,
-        tension: 0.4,
-        fill: false
-      }]
-    },
-    options: {
-      responsive: true,
-      animation: false,
-      scales: {
-        y: { beginAtZero: true }
-      }
+const modeToggle = document.getElementById("modeToggle");
+if (modeToggle) {
+    modeToggle.onclick = () => {
+        if (mode === "simulation") {
+            mode = "live";
+            deviceConnected = false;
+            modeToggle.innerText = "Switch to Simulation";
+            document.getElementById("systemStatus").innerText = "Status: LIVE (OFFLINE)";
+        } else {
+            mode = "simulation";
+            modeToggle.innerText = "Switch to Live";
+            document.getElementById("systemStatus").innerText = "Status: SIMULATION";
+        }
+        resetCharts();
+    };
+}
+
+let tegData = [];
+let cemsData = [];
+let labels = [];
+
+const tegChartCtx = document.getElementById("tegChart");
+const cemsChartCtx = document.getElementById("cemsChart");
+
+let tegChart, cemsChart;
+
+if (tegChartCtx) {
+    tegChart = new Chart(tegChartCtx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'TEG Power (W)',
+                data: tegData,
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        }
+    });
+
+    cemsChart = new Chart(cemsChartCtx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'CO (ppm)',
+                data: cemsData,
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        }
+    });
+}
+
+function resetCharts() {
+    labels.length = 0;
+    tegData.length = 0;
+    cemsData.length = 0;
+    if (tegChart) tegChart.update();
+    if (cemsChart) cemsChart.update();
+}
+
+function generateSimulationData() {
+    const hot = 200 + Math.sin(Date.now()/2000)*20;
+    const cold = 50;
+    const deltaT = hot - cold;
+    const power = deltaT * 0.05;
+    const co = 60 + Math.sin(Date.now()/1500)*10;
+    return { power, co };
+}
+
+setInterval(() => {
+    if (!tegChart) return;
+
+    labels.push(new Date().toLocaleTimeString());
+    if (labels.length > 20) labels.shift();
+
+    if (mode === "simulation") {
+        const data = generateSimulationData();
+        tegData.push(data.power);
+        cemsData.push(data.co);
+    } else {
+        if (deviceConnected) {
+            tegData.push(Math.random()*10);
+            cemsData.push(Math.random()*100);
+        } else {
+            tegData.push(0);
+            cemsData.push(0);
+        }
     }
-  });
-}
 
-const tegChart = createChart(document.getElementById("tegChart"), "TEG Watt");
-const cemsChart = createChart(document.getElementById("cemsChart"), "CEMS ppm");
+    if (tegData.length > 20) tegData.shift();
+    if (cemsData.length > 20) cemsData.shift();
 
-/* ===== RESET ===== */
+    tegChart.update();
+    cemsChart.update();
 
-function resetChart(chart) {
-  chart.data.labels = [];
-  chart.data.datasets[0].data = [];
-  chart.update();
-}
-
-/* ===== ADD DATA ===== */
-
-function addData(chart, label, value) {
-  if (chart.data.labels.length > 25) {
-    chart.data.labels.shift();
-    chart.data.datasets[0].data.shift();
-  }
-
-  chart.data.labels.push(label);
-  chart.data.datasets[0].data.push(value);
-  chart.update();
-}
-
-/* ===== DATA ===== */
-
-function simulationData() {
-  return {
-    teg: 40 + Math.random() * 20,
-    cems: 80 + Math.random() * 30
-  };
-}
-
-function liveData() {
-  if (!deviceActive) {
-    return { teg: 0, cems: 0 };
-  }
-
-  return {
-    teg: 60 + Math.random() * 10,
-    cems: 70 + Math.random() * 10
-  };
-}
-
-/* ===== UPDATE LOOP ===== */
-
-function updateCharts() {
-
-  const time = new Date().toLocaleTimeString();
-  let data;
-
-  if (isLive) {
-    data = liveData();
-  } else {
-    data = simulationData();
-  }
-
-  addData(tegChart, time, data.teg);
-  addData(cemsChart, time, data.cems);
-}
-
-setInterval(updateCharts, 1000);
-
-/* ===== MODE SWITCH ===== */
-
-modeBtn.addEventListener("click", () => {
-
-  isLive = !isLive;
-
-  resetChart(tegChart);
-  resetChart(cemsChart);
-
-  if (connectionInterval) {
-    clearInterval(connectionInterval);
-  }
-
-  if (isLive) {
-
-    deviceActive = false;
-    modeStatus.textContent = "Live";
-    connectionStatus.textContent = "Offline";
-    announcement.textContent = "Live Mode Active";
-    modeBtn.textContent = "Switch to Simulation";
-
-    connectionInterval = setInterval(() => {
-      deviceActive = Math.random() > 0.5;
-      connectionStatus.textContent = deviceActive ? "Online" : "Offline";
-    }, 5000);
-
-  } else {
-
-    modeStatus.textContent = "Simulation";
-    connectionStatus.textContent = "Offline";
-    announcement.textContent = "Simulation Mode Active";
-    modeBtn.textContent = "Switch to Live Mode";
-  }
-});
+}, 1000);
