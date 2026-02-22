@@ -1,53 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Si NeRo - Chart</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>NeRo Monitoring</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<div class="dashboard-container">
+<nav>
+  <div class="logo">Si NeRo</div>
+  <div class="nav-links">
+    <button id="modeBtn">Switch to Live Mode</button>
+  </div>
+</nav>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <h2>Si NeRo : Sistem Neraca Zero Emissions</h2>
-    <nav>
-      <a href="index.html" class="active">Chart</a>
-      <a href="parameter.html">Parameter</a>
-      <button id="modeToggle">Dark Mode</button>
-    </nav>
-  </aside>
+<div class="container">
 
-  <!-- Main -->
-  <main class="main-content">
-    <div class="tool-container">
+  <div class="card">
+    <h3>TEG Output (Watt)</h3>
+    <canvas id="tegChart"></canvas>
+  </div>
 
-      <div class="chart-card">
-        <h3>TEG Monitoring</h3>
-        <canvas id="tegChart"></canvas>
-        <div class="status offline" id="tegStatus">Status: OFFLINE</div>
-      </div>
+  <div class="card">
+    <h3>CEMS Emission (ppm)</h3>
+    <canvas id="cemsChart"></canvas>
+  </div>
 
-      <div class="chart-card">
-        <h3>CEMS Monitoring</h3>
-        <canvas id="cemsChart"></canvas>
-        <div class="status offline" id="cemsStatus">Status: OFFLINE</div>
-      </div>
+  <div class="card status-card">
+    <h3>System Status</h3>
+    <p>Mode: <span id="modeStatus">Simulation</span></p>
+    <p>Connection: <span id="connectionStatus">Offline</span></p>
+  </div>
 
-    </div>
-  </main>
 </div>
 
-<!-- System Indicator -->
-<div class="system-indicator">
-  <span id="modeText">SIMULATION MODE</span>
-  <span id="deviceStatus" class="status offline">DEVICE OFFLINE</span>
-  <button id="modeSwitchBtn">Switch to Live</button>
+<div class="announcement" id="announcement">
+  Simulation Mode Active
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
