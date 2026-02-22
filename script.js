@@ -1,131 +1,126 @@
-// ===== Sidebar Dark/Light Mode Toggle =====
-const modeToggle = document.getElementById('modeToggle');
-if (modeToggle) {
-  modeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('light-mode');
-    modeToggle.textContent =
-      document.body.classList.contains('light-mode')
-        ? 'Dark Mode'
-        : 'Light Mode';
-  });
-}
+let mode = "simulation";
+let intervalRef = null;
 
-// ===== Pop-up Info =====
-const overlay = document.getElementById('overlay');
-const popup = document.getElementById('popup');
-const popupText = document.getElementById('popupText');
+const modeText = document.getElementById("modeText");
+const deviceStatus = document.getElementById("deviceStatus");
+const modeSwitchBtn = document.getElementById("modeSwitchBtn");
 
-function showPopup(text) {
-  if (!popup || !overlay) return;
-  popupText.textContent = text;
-  popup.style.display = 'block';
-  overlay.style.display = 'block';
-}
+const tegStatus = document.getElementById("tegStatus");
+const cemsStatus = document.getElementById("cemsStatus");
 
-function closePopup() {
-  if (!popup || !overlay) return;
-  popup.style.display = 'none';
-  overlay.style.display = 'none';
-}
-
-// ===== Chart Setup =====
-const tegCtx = document.getElementById('tegChart')?.getContext('2d');
-const cemsCtx = document.getElementById('cemsChart')?.getContext('2d');
+const tegCtx = document.getElementById("tegChart")?.getContext("2d");
+const cemsCtx = document.getElementById("cemsChart")?.getContext("2d");
 
 function createChart(ctx, label, color) {
   if (!ctx) return null;
-
   return new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: label,
-        data: [],
-        borderColor: color,
-        backgroundColor: color,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      animation: false,
-      scales: {
-        y: { min: 0, max: 100 }
-      }
-    }
+    type: "line",
+    data: { labels: [], datasets: [{ label, data: [], borderColor: color, tension: 0.4 }] },
+    options: { responsive: true, animation: false, scales: { y: { min: 0, max: 150 } } }
   });
 }
 
-const tegChart = createChart(tegCtx, 'TEG Output (W)', 'rgba(0,200,255,0.8)');
-const cemsChart = createChart(cemsCtx, 'CEMS CO₂ (ppm)', 'rgba(255,100,100,0.8)');
+const tegChart = createChart(tegCtx, "TEG Power (W)", "cyan");
+const cemsChart = createChart(cemsCtx, "CEMS CO₂ (ppm)", "orange");
 
-// ===== Status ONLINE =====
-const tegStatus = document.getElementById('tegStatus');
-const cemsStatus = document.getElementById('cemsStatus');
-
-if (tegStatus) tegStatus.innerHTML = 'Status: <span style="color:#0f0;">ONLINE</span>';
-if (cemsStatus) cemsStatus.innerHTML = 'Status: <span style="color:#0f0;">ONLINE</span>';
-
-// ===== Fake Simulation Logic =====
-let time = 0;
-let tegBase = 50;
-let cemsBase = 40;
-
-function randomFluctuation(base, variance) {
-  return base + (Math.random() - 0.5) * variance;
-}
-
-function updateChart(chart, value) {
+function pushData(chart, value) {
   if (!chart) return;
-
-  chart.data.labels.push(time);
+  chart.data.labels.push("");
   chart.data.datasets[0].data.push(value);
-
   if (chart.data.labels.length > 20) {
     chart.data.labels.shift();
     chart.data.datasets[0].data.shift();
   }
-
   chart.update();
 }
 
-// ===== Parameter Page Simulation =====
-const tegCard = document.querySelector('.param-column:nth-child(1) .param-card');
-const cemsCard = document.querySelector('.param-column:nth-child(2) .param-card');
+function updateParameter(teg, cems) {
+  const tegCard = document.querySelector(".param-column:nth-child(1) .param-card");
+  const cemsCard = document.querySelector(".param-column:nth-child(2) .param-card");
 
-function updateParameterCards(tegValue, cemsValue) {
   if (tegCard) {
     tegCard.innerHTML = `
-      <p><strong>Teg Power:</strong> ${tegValue.toFixed(2)} W</p>
-      <p><strong>Temp Hot Side:</strong> ${(tegValue + 80).toFixed(1)} °C</p>
-      <p><strong>Voltage:</strong> ${(tegValue / 10).toFixed(2)} V</p>
+      <p>Power: ${teg.toFixed(2)} W</p>
+      <p>Voltage: ${(teg/10).toFixed(2)} V</p>
+      <p>Hot Temp: ${(teg+70).toFixed(1)} °C</p>
     `;
   }
 
   if (cemsCard) {
     cemsCard.innerHTML = `
-      <p><strong>CO₂:</strong> ${cemsValue.toFixed(1)} ppm</p>
-      <p><strong>NOx:</strong> ${(cemsValue / 3).toFixed(1)} ppm</p>
-      <p><strong>SO₂:</strong> ${(cemsValue / 4).toFixed(1)} ppm</p>
+      <p>CO₂: ${cems.toFixed(1)} ppm</p>
+      <p>NOx: ${(cems/4).toFixed(1)} ppm</p>
+      <p>SO₂: ${(cems/5).toFixed(1)} ppm</p>
     `;
   }
 }
 
-// ===== Interval Simulation =====
-setInterval(() => {
-  time++;
+let tegBase = 60;
+let cemsBase = 50;
 
-  // TEG lebih stabil
-  tegBase += (Math.random() - 0.5) * 2;
-  let tegValue = randomFluctuation(tegBase, 10);
+function generateSim() {
+  tegBase += (Math.random()-0.5)*3;
+  cemsBase += (Math.random()-0.5)*8;
+  return {
+    teg: tegBase + (Math.random()-0.5)*15,
+    cems: cemsBase + (Math.random()-0.5)*30
+  };
+}
 
-  // CEMS lebih fluktuatif
-  cemsBase += (Math.random() - 0.5) * 5;
-  let cemsValue = randomFluctuation(cemsBase, 20);
+function startSimulation() {
+  clearInterval(intervalRef);
+  mode = "simulation";
+  modeText.textContent = "SIMULATION MODE";
+  deviceStatus.textContent = "SIMULATED";
+  deviceStatus.className = "status warning";
+  if (tegStatus) tegStatus.innerHTML = "Status: <span style='color:yellow'>SIM</span>";
+  if (cemsStatus) cemsStatus.innerHTML = "Status: <span style='color:yellow'>SIM</span>";
 
-  updateChart(tegChart, tegValue);
-  updateChart(cemsChart, cemsValue);
-  updateParameterCards(tegValue, cemsValue);
+  intervalRef = setInterval(()=>{
+    const d = generateSim();
+    pushData(tegChart, d.teg);
+    pushData(cemsChart, d.cems);
+    updateParameter(d.teg, d.cems);
+  },1000);
+}
 
-}, 1000);
+async function fetchLive() {
+  try {
+    const res = await fetch("http://192.168.4.1/data");
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+function startLive() {
+  clearInterval(intervalRef);
+  mode = "live";
+  modeText.textContent = "LIVE MODE";
+  deviceStatus.textContent = "CONNECTING...";
+  deviceStatus.className = "status warning";
+
+  intervalRef = setInterval(async ()=>{
+    const d = await fetchLive();
+    if (d) {
+      deviceStatus.textContent = "ONLINE";
+      deviceStatus.className = "status online";
+      if (tegStatus) tegStatus.innerHTML = "Status: <span style='color:#0f0'>ONLINE</span>";
+      if (cemsStatus) cemsStatus.innerHTML = "Status: <span style='color:#0f0'>ONLINE</span>";
+      pushData(tegChart, d.teg);
+      pushData(cemsChart, d.cems);
+      updateParameter(d.teg, d.cems);
+    } else {
+      deviceStatus.textContent = "OFFLINE";
+      deviceStatus.className = "status offline";
+    }
+  },1000);
+}
+
+if (modeSwitchBtn) {
+  modeSwitchBtn.addEventListener("click", ()=>{
+    mode === "simulation" ? startLive() : startSimulation();
+  });
+}
+
+startSimulation();
