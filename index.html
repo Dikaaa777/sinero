@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini SCADA - TEG + CEMS</title>
+<title>Si NeRo</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="dark">
 
 <div class="container">
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <h2>Mini SCADA</h2>
+        <h2>Si NeRo: Sistem Neraca Zero Emmisions</h2>
+
         <nav>
             <a href="index.html" class="active">Dashboard</a>
             <a href="parameter.html">Parameter</a>
@@ -28,24 +29,19 @@
     <!-- Main -->
     <main class="main">
 
-        <!-- Status Bar -->
         <div class="status-bar">
-            <div id="systemStatus">Status: SIMULATION</div>
-            <div id="alarmIndicator" class="alarm-normal">NORMAL</div>
+            <div id="systemStatus">SIMULATION MODE</div>
+            <div id="alarmIndicator" class="status-normal">NORMAL</div>
         </div>
 
-        <!-- Charts -->
-        <div class="chart-container">
+        <div class="card">
+            <h3>TEG Power Output</h3>
             <canvas id="tegChart"></canvas>
         </div>
 
-        <div class="chart-container">
+        <div class="card">
+            <h3>CEMS - CO Level</h3>
             <canvas id="cemsChart"></canvas>
-        </div>
-
-        <!-- Announcement -->
-        <div class="announcement">
-            Simulation Mode aktif – Data prototype berjalan.
         </div>
 
     </main>
