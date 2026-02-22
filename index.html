@@ -1,45 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Si NeRo Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini SCADA - TEG + CEMS</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<nav>
-  <div class="logo">Si NeRo</div>
-  <div class="nav-links">
-    <a href="parameter.html">Parameter</a>
-    <button id="modeBtn">Switch to Live Mode</button>
-  </div>
-</nav>
-
 <div class="container">
 
-  <div class="card">
-    <h3>TEG Output (Watt)</h3>
-    <canvas id="tegChart"></canvas>
-  </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>Mini SCADA</h2>
+        <nav>
+            <a href="index.html" class="active">Dashboard</a>
+            <a href="parameter.html">Parameter</a>
+        </nav>
 
-  <div class="card">
-    <h3>CEMS Emission (ppm)</h3>
-    <canvas id="cemsChart"></canvas>
-  </div>
+        <div class="sidebar-controls">
+            <button id="themeToggle">Toggle Theme</button>
+            <button id="modeToggle">Switch to Live</button>
+        </div>
+    </aside>
 
-  <div class="card status-card">
-    <h3>System Status</h3>
-    <p>Mode: <span id="modeStatus">Simulation</span></p>
-    <p>Connection: <span id="connectionStatus">Offline</span></p>
-  </div>
+    <!-- Main -->
+    <main class="main">
 
-</div>
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div id="systemStatus">Status: SIMULATION</div>
+            <div id="alarmIndicator" class="alarm-normal">NORMAL</div>
+        </div>
 
-<div class="announcement" id="announcement">
-  Simulation Mode Active
+        <!-- Charts -->
+        <div class="chart-container">
+            <canvas id="tegChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="cemsChart"></canvas>
+        </div>
+
+        <!-- Announcement -->
+        <div class="announcement">
+            Simulation Mode aktif – Data prototype berjalan.
+        </div>
+
+    </main>
 </div>
 
 <script src="script.js"></script>
