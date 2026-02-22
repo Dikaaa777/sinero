@@ -4,10 +4,10 @@ const connectionStatus = document.getElementById("connectionStatus");
 const announcement = document.getElementById("announcement");
 
 let isLive = false;
-let isOnline = false;
-let interval;
+let deviceActive = false;
+let connectionInterval;
 
-/* ===== Chart Setup ===== */
+/* ===== CREATE CHART ===== */
 
 function createChart(ctx, label) {
   return new Chart(ctx, {
@@ -18,7 +18,7 @@ function createChart(ctx, label) {
         label: label,
         data: [],
         borderWidth: 2,
-        tension: 0.4, // smooth curve
+        tension: 0.4,
         fill: false
       }]
     },
@@ -35,7 +35,7 @@ function createChart(ctx, label) {
 const tegChart = createChart(document.getElementById("tegChart"), "TEG Watt");
 const cemsChart = createChart(document.getElementById("cemsChart"), "CEMS ppm");
 
-/* ===== Reset Chart ===== */
+/* ===== RESET ===== */
 
 function resetChart(chart) {
   chart.data.labels = [];
@@ -43,50 +43,10 @@ function resetChart(chart) {
   chart.update();
 }
 
-/* ===== Fake Simulation ===== */
-
-function fakeSimulation() {
-  let tegBase = 40 + Math.random() * 20;
-  let cemsBase = 80 + Math.random() * 30;
-
-  return {
-    teg: tegBase + (Math.random() - 0.5) * 10,
-    cems: cemsBase + (Math.random() - 0.5) * 15
-  };
-}
-
-/* ===== Live Mode (Simulated Online/Offline) ===== */
-
-function liveData() {
-  if (!isOnline) {
-    return { teg: 0, cems: 0 };
-  }
-
-  return {
-    teg: 60 + Math.random() * 10,
-    cems: 70 + Math.random() * 10
-  };
-}
-
-/* ===== Update Chart ===== */
-
-function updateCharts() {
-
-  const time = new Date().toLocaleTimeString();
-  let data;
-
-  if (isLive) {
-    data = liveData();
-  } else {
-    data = fakeSimulation();
-  }
-
-  addData(tegChart, time, data.teg);
-  addData(cemsChart, time, data.cems);
-}
+/* ===== ADD DATA ===== */
 
 function addData(chart, label, value) {
-  if (chart.data.labels.length > 20) {
+  if (chart.data.labels.length > 25) {
     chart.data.labels.shift();
     chart.data.datasets[0].data.shift();
   }
@@ -96,35 +56,76 @@ function addData(chart, label, value) {
   chart.update();
 }
 
-/* ===== Mode Toggle ===== */
+/* ===== DATA ===== */
+
+function simulationData() {
+  return {
+    teg: 40 + Math.random() * 20,
+    cems: 80 + Math.random() * 30
+  };
+}
+
+function liveData() {
+  if (!deviceActive) {
+    return { teg: 0, cems: 0 };
+  }
+
+  return {
+    teg: 60 + Math.random() * 10,
+    cems: 70 + Math.random() * 10
+  };
+}
+
+/* ===== UPDATE LOOP ===== */
+
+function updateCharts() {
+
+  const time = new Date().toLocaleTimeString();
+  let data;
+
+  if (isLive) {
+    data = liveData();
+  } else {
+    data = simulationData();
+  }
+
+  addData(tegChart, time, data.teg);
+  addData(cemsChart, time, data.cems);
+}
+
+setInterval(updateCharts, 1000);
+
+/* ===== MODE SWITCH ===== */
 
 modeBtn.addEventListener("click", () => {
+
   isLive = !isLive;
 
   resetChart(tegChart);
   resetChart(cemsChart);
 
+  if (connectionInterval) {
+    clearInterval(connectionInterval);
+  }
+
   if (isLive) {
+
+    deviceActive = false;
     modeStatus.textContent = "Live";
+    connectionStatus.textContent = "Offline";
     announcement.textContent = "Live Mode Active";
     modeBtn.textContent = "Switch to Simulation";
-    simulateConnection();
+
+    connectionInterval = setInterval(() => {
+      deviceActive = Math.random() > 0.5;
+      connectionStatus.textContent = deviceActive ? "Online" : "Offline";
+    }, 5000);
+
   } else {
+
     modeStatus.textContent = "Simulation";
     connectionStatus.textContent = "Offline";
     announcement.textContent = "Simulation Mode Active";
     modeBtn.textContent = "Switch to Live Mode";
   }
 });
-
-/* ===== Simulate Online Status ===== */
-
-function simulateConnection() {
-  isOnline = Math.random() > 0.3; // 70% chance online
-
-  connectionStatus.textContent = isOnline ? "Online" : "Offline";
-}
-
-/* ===== Start Loop ===== */
-
-interval = setInterval(updateCharts, 1000);
