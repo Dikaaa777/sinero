@@ -1,110 +1,120 @@
-* {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-  color: white;
+  transition: background 0.3s, color 0.3s;
 }
 
-/* ===== NAVBAR ===== */
-
-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
+body.dark {
   background: #111;
+  color: #fff;
 }
 
-.logo {
-  font-weight: bold;
-  font-size: 18px;
+body.light {
+  background: #f4f4f4;
+  color: #111;
 }
-
-.nav-links {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: white;
-  font-size: 14px;
-}
-
-.nav-links button {
-  padding: 8px 14px;
-  background: #00bcd4;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.nav-links button:hover {
-  background: #0097a7;
-}
-
-/* ===== LAYOUT KLASIK ===== */
 
 .container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  padding: 20px;
+  background: #1f1f1f;
+  color: #fff;
+}
+
+body.light .sidebar {
+  background: #ddd;
+  color: #000;
+}
+
+.sidebar nav a {
+  display: block;
+  margin: 10px 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar nav a.active {
+  font-weight: bold;
+}
+
+.sidebar-controls {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.main {
+  flex: 1;
   padding: 20px;
 }
 
-.card {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 12px;
+.status-bar {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.4);
 }
 
-/* Dua grafik sejajar */
-.card:nth-child(1),
-.card:nth-child(2) {
-  width: 48%;
-  display: inline-block;
-  vertical-align: top;
+.alarm-normal {
+  color: lime;
 }
 
-/* Status full */
-.status-card {
-  width: 100%;
+.alarm-warning {
+  color: orange;
 }
 
-canvas {
-  max-height: 300px;
+.alarm-danger {
+  color: red;
 }
 
-/* ===== ANNOUNCEMENT ===== */
+.chart-container {
+  margin-bottom: 30px;
+}
+
+.parameter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.parameter-card {
+  padding: 15px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+}
+
+body.light .parameter-card {
+  background: #fff;
+}
 
 .announcement {
   position: fixed;
-  bottom: 15px;
-  left: 15px;
-  background: rgba(0, 188, 212, 0.9);
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-size: 14px;
+  bottom: 10px;
+  left: 260px;
+  padding: 8px 15px;
+  font-size: 13px;
+  background: rgba(0,0,0,0.6);
+  border-radius: 6px;
 }
 
-/* ===== MOBILE ===== */
-
 @media (max-width: 768px) {
-
-  .card:nth-child(1),
-  .card:nth-child(2) {
-    width: 100%;
-    display: block;
+  .container {
+    flex-direction: column;
   }
 
-  nav {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .sidebar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .announcement {
+    left: 10px;
   }
 }
