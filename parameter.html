@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parameter - Mini SCADA</title>
+<title>Si NeRo</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark">
 
 <div class="container">
 
     <aside class="sidebar">
-        <h2>Mini SCADA</h2>
+        <h2>Si NeRo: Sistem Neraca Zero Emmisions</h2>
+
         <nav>
             <a href="index.html">Dashboard</a>
             <a href="parameter.html" class="active">Parameter</a>
@@ -24,11 +25,15 @@
 
     <main class="main">
 
-        <h2>TEG Parameters</h2>
-        <div class="parameter-grid" id="tegParams"></div>
+        <div class="card">
+            <h3>TEG Parameters</h3>
+            <div class="parameter-grid" id="tegParams"></div>
+        </div>
 
-        <h2>CEMS Parameters</h2>
-        <div class="parameter-grid" id="cemsParams"></div>
+        <div class="card">
+            <h3>CEMS Parameters</h3>
+            <div class="parameter-grid" id="cemsParams"></div>
+        </div>
 
     </main>
 </div>
