@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div class="dashboard-container">
 
-  <!-- Sidebar -->
   <aside class="sidebar">
     <h2>Si NeRo : Sistem Neraca Zero Emissions</h2>
     <nav>
@@ -19,7 +19,6 @@
     </nav>
   </aside>
 
-  <!-- Main Content -->
   <main class="main-content param-page">
     <div class="param-column">
       <h3>TEG Parameters</h3>
@@ -33,11 +32,10 @@
 
 </div>
 
-<!-- Pop-up -->
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="popup">
-  <div id="popupText"></div>
-  <button onclick="closePopup()">Close</button>
+<div class="system-indicator">
+  <span id="modeText">SIMULATION MODE</span>
+  <span id="deviceStatus" class="status offline">DEVICE OFFLINE</span>
+  <button id="modeSwitchBtn">Switch to Live</button>
 </div>
 
 <script src="script.js"></script>
