@@ -2,46 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Si NeRo Dashboard</title>
+  <title>Si NeRo Parameters</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <nav>
   <div class="logo">Si NeRo</div>
   <div class="nav-links">
-    <a href="parameter.html">Parameter</a>
-    <button id="modeBtn">Switch to Live Mode</button>
+    <a href="index.html">Dashboard</a>
   </div>
 </nav>
 
 <div class="container">
 
   <div class="card">
-    <h3>TEG Output (Watt)</h3>
-    <canvas id="tegChart"></canvas>
+    <h3>TEG Configuration</h3>
+
+    <label>Max Temperature (°C)</label>
+    <input type="number" id="tegMaxTemp">
+
+    <label>Min Temperature (°C)</label>
+    <input type="number" id="tegMinTemp">
+
+    <label>Power Threshold (W)</label>
+    <input type="number" id="tegPower">
   </div>
 
   <div class="card">
-    <h3>CEMS Emission (ppm)</h3>
-    <canvas id="cemsChart"></canvas>
+    <h3>CEMS Configuration</h3>
+
+    <label>Max CO₂ (ppm)</label>
+    <input type="number" id="cemsMax">
+
+    <label>Warning Level (ppm)</label>
+    <input type="number" id="cemsWarn">
+
+    <label>Safe Level (ppm)</label>
+    <input type="number" id="cemsSafe">
   </div>
 
   <div class="card status-card">
-    <h3>System Status</h3>
-    <p>Mode: <span id="modeStatus">Simulation</span></p>
-    <p>Connection: <span id="connectionStatus">Offline</span></p>
+    <h3>System Mode</h3>
+    <p>Current Mode: <span id="modeStatus">Loading...</span></p>
+    <button id="saveBtn">Save Parameters</button>
   </div>
 
 </div>
 
-<div class="announcement" id="announcement">
-  Simulation Mode Active
-</div>
+<script>
 
-<script src="script.js"></script>
+/* ===== LOAD MODE STATUS ===== */
+
+const modeStatus = document.getElementById("modeStatus");
+const savedMode = localStorage.getItem("nero_mode");
+
+modeStatus.textContent = savedMode === "live" ? "Live Mode" : "Simulation Mode";
+
+/* ===== DEFAULT VALUES ===== */
+
+function loadParameters() {
+
+  document.getElementById("tegMaxTemp").value =
+    localStorage.getItem("tegMaxTemp") || 120;
+
+  document.getElementById("tegMinTemp").value =
+    localStorage.getItem("tegMinTemp") || 40;
+
+  document.getElementById("tegPower").value =
+    localStorage.getItem("tegPower") || 75;
+
+  document.getElementById("cemsMax").value =
+    localStorage.getItem("cemsMax") || 150;
+
+  document.getElementById("cemsWarn").value =
+    localStorage.getItem("cemsWarn") || 120;
+
+  document.getElementById("cemsSafe").value =
+    localStorage.getItem("cemsSafe") || 80;
+}
+
+loadParameters();
+
+/* ===== SAVE PARAMETERS ===== */
+
+document.getElementById("saveBtn").addEventListener("click", () => {
+
+  localStorage.setItem("tegMaxTemp",
+    document.getElementById("tegMaxTemp").value);
+
+  localStorage.setItem("tegMinTemp",
+    document.getElementById("tegMinTemp").value);
+
+  localStorage.setItem("tegPower",
+    document.getElementById("tegPower").value);
+
+  localStorage.setItem("cemsMax",
+    document.getElementById("cemsMax").value);
+
+  localStorage.setItem("cemsWarn",
+    document.getElementById("cemsWarn").value);
+
+  localStorage.setItem("cemsSafe",
+    document.getElementById("cemsSafe").value);
+
+  alert("Parameters Saved");
+});
+
+</script>
+
 </body>
 </html>
