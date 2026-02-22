@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -5,19 +9,31 @@ body {
   color: white;
 }
 
-/* NAVIGATION */
+/* ===== NAVBAR ===== */
+
 nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
   background: #111;
-  flex-wrap: wrap;
 }
 
 .logo {
   font-weight: bold;
   font-size: 18px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
 }
 
 .nav-links button {
@@ -33,28 +49,39 @@ nav {
   background: #0097a7;
 }
 
-/* CONTAINER */
+/* ===== LAYOUT KLASIK ===== */
+
 .container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
   padding: 20px;
 }
 
-/* CARD */
 .card {
-  flex: 1 1 400px;
   background: #1e1e1e;
   padding: 20px;
   border-radius: 12px;
+  margin-bottom: 20px;
   box-shadow: 0 0 15px rgba(0,0,0,0.4);
 }
 
-.status-card {
-  max-width: 300px;
+/* Dua grafik sejajar */
+.card:nth-child(1),
+.card:nth-child(2) {
+  width: 48%;
+  display: inline-block;
+  vertical-align: top;
 }
 
-/* ANNOUNCEMENT */
+/* Status full */
+.status-card {
+  width: 100%;
+}
+
+canvas {
+  max-height: 300px;
+}
+
+/* ===== ANNOUNCEMENT ===== */
+
 .announcement {
   position: fixed;
   bottom: 15px;
@@ -63,21 +90,21 @@ nav {
   padding: 10px 15px;
   border-radius: 8px;
   font-size: 14px;
-  transition: 0.3s;
 }
 
-/* MOBILE */
+/* ===== MOBILE ===== */
+
 @media (max-width: 768px) {
+
+  .card:nth-child(1),
+  .card:nth-child(2) {
+    width: 100%;
+    display: block;
+  }
+
   nav {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .container {
-    flex-direction: column;
-  }
-
-  .card {
-    flex: 1 1 100%;
+    gap: 10px;
   }
 }
